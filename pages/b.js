@@ -1,13 +1,15 @@
 
 import {withRouter} from 'next/router'
+import dynamic from 'next/dynamic'
 import styled from 'styled-components'
-
+// import moment from 'moment'
+const Comp = dynamic(import('../components/comp'))
 const Title = styled.h1 `
 color: yellow;
 font-size:40px;`
-const B = ({router, name})=> (
+const B = ({router, name,time})=> (
     <> 
-        <Title>This is Title</Title>
+        <Title>This is Title {time}</Title>
         <span>这是B页面, 参数是{router.query.id} {name}</span>
         <style jsx>{`
            
@@ -31,10 +33,12 @@ const B = ({router, name})=> (
 // }
 //getInitialProps async
 B.getInitialProps =async(ctx)=> {
+    const moment = await import('moment')
     const promise = new Promise((resolve)=> {
         setTimeout(()=> {
             resolve({
-                name: 'charlie'
+                name: 'charlie',
+                time: moment.default(Date.now()- 60*1000).fromNow()
             })
         },2000)
        
