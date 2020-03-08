@@ -1,5 +1,6 @@
 import Router from 'next/router'
 import {withRouter} from 'next/router'
+import Head from 'next/head'
 import Link from 'next/link'
 const A= ({router})=>{
     const id = router.asPath.split(router.route)[1].substr(1)

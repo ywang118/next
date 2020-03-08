@@ -17,7 +17,6 @@ app.prepare().then(()=> {
         ctx.respond = false
     })
     server.use(router.routes())
-    
     server.use(async(ctx,next)=> {
         await handle(ctx.req, ctx.res)
         ctx.respond = false
