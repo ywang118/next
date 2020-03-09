@@ -1,23 +1,4 @@
-import React, {useState, useReducer, useEffect} from 'react'
-
-class MyCount extends React.Component {
-    state = {
-        count : 0,
-    }
-    componentDidMount(){
-        this.interval = setInterval(()=> {
-            this.setState({count: this.state.count +1})
-        },1000)
-    }
-    componentWillUnmount(){
-        if(this.interval){
-            clearInterval(this.interval)
-        }
-    }
-    render(){
-        return <span>{this.state.count}</span>
-    }
-}
+import React, {useState, useReducer,memo,useMemo,useCallback} from 'react'
 
 function countReducer(state,action){
     switch(action.type){
@@ -30,18 +11,32 @@ function countReducer(state,action){
     }
 }
 function myCountFunc(){
-    //const [count, setCount] = useState(0)
     const [count, dispatchCount] = useReducer(countReducer,0)
-    useEffect(()=>{
-        const interval = setInterval(()=> {
-            // setCount(c=> c+1)
-            dispatchCount({type: 'add'})
-        },1000)
-        return ()=> clearInterval(interval)
-    },[])
-    return <span>{count}</span>
-   
-   
+    const [name,setName]= useState('jocky')
+    
+    const config = useMemo(()=>({
+        text: `count is ${count}`,
+        color: count > 3 ? 'red' :'blue',
+    }),[count])
+    
+    const handelButtonClick = useCallback(()=>dispatchCount({type:'add'}),[])
+    
+    return (
+        <div>
+            <input value={name} onChange={(e)=>setName(e.target.value)}/>
+            <Child 
+            config = {config}
+            onButtonClick={handelButtonClick}/>
+        </div>
+    ) 
 }
 
+const Child=memo(function Child({onButtonClick, config}) {
+    console.log('child render')
+    return (
+        <button onClick={onButtonClick} style={{color: config.color}}>
+            {config.text}
+        </button>
+    )
+})
 export default myCountFunc
