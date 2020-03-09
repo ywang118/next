@@ -1,4 +1,4 @@
-import React, {useState, useEffect} from 'react'
+import React, {useState, useReducer, useEffect} from 'react'
 
 class MyCount extends React.Component {
     state = {
@@ -18,14 +18,27 @@ class MyCount extends React.Component {
         return <span>{this.state.count}</span>
     }
 }
+
+function countReducer(state,action){
+    switch(action.type){
+        case 'add':
+            return state +1
+        case 'minus':
+            return state -1
+        default:
+            return state
+    }
+}
 function myCountFunc(){
-    const [count, setCount] = useState(0)
+    //const [count, setCount] = useState(0)
+    const [count, dispatchCount] = useReducer(countReducer,0)
     useEffect(()=>{
         const interval = setInterval(()=> {
-            setCount(c=> c+1)
+            // setCount(c=> c+1)
+            dispatchCount({type: 'add'})
         },1000)
         return ()=> clearInterval(interval)
-    })
+    },[])
     return <span>{count}</span>
    
    
