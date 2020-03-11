@@ -1,5 +1,6 @@
 import Router from "next/router"
 import Link from 'next/link'
+import store from '../store/store'
 
 export default ()=> {
   function gotoTestB(){
