@@ -1,4 +1,5 @@
 import {createStore, combineReducers,applyMiddleware} from 'redux'
+import { composeWithDevTools } from 'redux-devtools-extension';
 import ReduxThunk from 'redux-thunk'
 
 const userInitialState= {
@@ -24,7 +25,7 @@ export default function initializeStore(state) {
             
             user: userInitialState
         },state),
-        applyMiddleware(ReduxThunk)
+        composeWithDevTools(applyMiddleware(ReduxThunk)),
   )
   return store
 }

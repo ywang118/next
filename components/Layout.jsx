@@ -1,9 +1,13 @@
 import Link from 'next/link'
+import getConfig from 'next/config'
+
 import {useState,useCallback} from 'react'
-import {Button, Layout,Icon,Input,Avatar} from 'antd'
-import {GithubOutlined } from '@ant-design/icons'
+import {Button, Layout,Icon,Input,Avatar,Tooltip,Dropdown, Menu} from 'antd'
+import {GithubOutlined,SmileOutlined } from '@ant-design/icons'
 const {Header, Content, Footer} = Layout
 import Container from './Container'
+const {publicRuntimeConfig} = getConfig()
+import {connect} from 'react-redux'
 const githubIconStyle = {
     color:'white',
     fontSize: 40,
@@ -16,7 +20,7 @@ const footerStyle = {
 }
 
 const Comp = ({color, children,style})=> <div style={{color, ...style }}>{children}</div>
-export default ({children})=> {
+const IndexLayout =({children,user})=>{
     
     const [search,setSearch] = useState('')
     const handleSearchChange = (event)=> {
@@ -24,6 +28,15 @@ export default ({children})=> {
     }
     const handelOnSearch = useCallback(()=> {},[])
 
+    const userDropDown = (
+        <Menu>
+            <Menu.Item>
+                <a href="javascript:viod(0)">
+                    log out
+                </a>
+            </Menu.Item>
+        </Menu>
+    )
     return (
         <Layout>
             <Header>
@@ -42,7 +55,22 @@ export default ({children})=> {
                 {/* header right: user  */}
                 <div className="header-right">
                     <div className="user">
-                        <Avatar size={40} icon="user" />
+                        {
+                            user && user.id ? (
+                                <Dropdown overlay={userDropDown}>
+                                    <a href='/'>
+                                        <Avatar size={40} src={user.avatar_url}/>
+                                    </a>
+                                </Dropdown>
+                            ):(
+                                <Tooltip title='click to log in'>
+                                    <a href={publicRuntimeConfig.OAUTH_URL}>
+                                        <SmileOutlined style={{fontSize: 40, paddingTop: 10,}} />
+                                    </a>
+                                </Tooltip>
+                            )
+                        }
+                        
                     </div>
                 </div>
                 
@@ -84,3 +112,8 @@ export default ({children})=> {
     )
 }
     
+export default connect(function mapState(state) {
+    return {
+        user: state.user
+    }
+})(IndexLayout)
