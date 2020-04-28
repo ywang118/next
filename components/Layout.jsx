@@ -8,6 +8,9 @@ const {Header, Content, Footer} = Layout
 import Container from './Container'
 const {publicRuntimeConfig} = getConfig()
 import {connect} from 'react-redux'
+import {logout} from '../store/store'
+import {withRouter} from 'next/router'
+import axios from 'axios'
 const githubIconStyle = {
     color:'white',
     fontSize: 40,
@@ -20,18 +23,36 @@ const footerStyle = {
 }
 
 const Comp = ({color, children,style})=> <div style={{color, ...style }}>{children}</div>
-const IndexLayout =({children,user})=>{
+const IndexLayout =({children,user, logout, router})=>{
     
     const [search,setSearch] = useState('')
     const handleSearchChange = (event)=> {
         setSearch(event.target.value)
     }
     const handelOnSearch = useCallback(()=> {},[])
+    
+    const handleLogout = useCallback(()=> {
+        logout()
+    },[logout])
 
+    const handelGotoOAuth =(e)=>{
+        e.preventDefault()
+        axios.get(`/prepare-auth?url=${router.asPath}`)
+          .then(resp => {
+              if(resp.status === 200){
+                  location.href = publicRuntimeConfig.OAUTH_URL
+              } else {
+                  console.log( `prepare-auth failed`, resp)
+              }
+          })
+          .catch (err=> {
+              console.log('prepare auth failed',err)
+          })
+    }
     const userDropDown = (
         <Menu>
             <Menu.Item>
-                <a href="javascript:viod(0)">
+                <a href="#" onClick={handleLogout}>
                     log out
                 </a>
             </Menu.Item>
@@ -64,7 +85,7 @@ const IndexLayout =({children,user})=>{
                                 </Dropdown>
                             ):(
                                 <Tooltip title='click to log in'>
-                                    <a href={publicRuntimeConfig.OAUTH_URL}>
+                                    <a href={publicRuntimeConfig.OAUTH_URL} onClick={handelGotoOAuth}>
                                         <SmileOutlined style={{fontSize: 40, paddingTop: 10,}} />
                                     </a>
                                 </Tooltip>
@@ -116,4 +137,8 @@ export default connect(function mapState(state) {
     return {
         user: state.user
     }
-})(IndexLayout)
+},function mapReducer(dispatch){
+    return {
+        logout: ()=> dispatch(logout())
+    }
+})(withRouter(IndexLayout))

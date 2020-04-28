@@ -40,13 +40,35 @@ module.exports = (server) => {
           console.log('userinfo', userInfo)
           ctx.session.userInfo = userInfo
           // 重定向到首页
-          ctx.redirect('/')
+          ctx.redirect((ctx.session && ctx.session.urlBeforeOAuth) ||'/')
+          ctx.session.urlBeforeOAuth = ''
         } else {
           ctx.body = `request token failed ${result.data && result.data.error}`
         }
       } else {
         ctx.body = 'code not exist'
       }
+    } else {
+      await next()
+    }
+  })
+  server.use(async(ctx,next)=>{
+    const path = ctx.path
+    const method = ctx.method
+    if (path === '/logout' && method ==='POST'){
+      ctx.session = null 
+      ctx.body = `logout success`
+    } else {
+      await next()
+    }
+  })
+  server.use(async(ctx,next)=> {
+    const path = ctx.path
+    const method = ctx.method
+    if (path === '/prepare-auth' && method === 'GET'){
+      const {url }= ctx.query
+      ctx.session.urlBeforeOAuth = url
+      ctx.body = 'ready'
     } else {
       await next()
     }
