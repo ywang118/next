@@ -5,6 +5,8 @@ import { Provider } from 'react-redux'
 import Layout from '../components/Layout'
 import initializeStore from '../store/store'
 import withRedux from '../lib/with-redux'
+import PageLoading from '../components/PageLoading'
+
 class MyApp extends App {
     // App组件的getInitialProps比较特殊
     // 能拿到一些额外的参数
@@ -31,6 +33,7 @@ class MyApp extends App {
         <Container>
           <Layout>
             <Provider store={reduxStore}>
+              <PageLoading/>
               {/* 把pageProps解构后传递给组件 */}
               <Component {...pageProps} />
             </Provider>
